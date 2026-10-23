@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tachyra Diagnostics — A second set of eyes for every physician</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f9fb; --surface:#ffffff; --ink:#0f1c2e; --muted:#566478; --line:#dde3ea;
+  --accent:#0b5cab; --accent-ink:#ffffff; --high:#b4332b; --mid:#a66a00; --ok:#2b78a8;
+  --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0c1520; --surface:#111d2b; --ink:#e8eef5; --muted:#93a3b8; --line:#223245;
+    --accent:#6cb4f5; --accent-ink:#06192e; --high:#ff8d85; --mid:#e8b04a; --ok:#6db3e8;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0c1520; --surface:#111d2b; --ink:#e8eef5; --muted:#93a3b8; --line:#223245;
+  --accent:#6cb4f5; --accent-ink:#06192e; --high:#ff8d85; --mid:#e8b04a; --ok:#6db3e8;
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 clamp(20px,5vw,40px)}
+
+/* header */
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:24px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:600;font-size:17px;letter-spacing:-.01em}
+.logo svg{width:30px;height:22px}
+.logo span{color:var(--muted);font-weight:400}
+.tools{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.tabs{display:flex;gap:4px}
+.tabs button,.theme{font:500 14px var(--sans);color:var(--muted);background:none;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;transition:color .2s,background .2s}
+.tabs button:hover,.theme:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{color:var(--ink);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.theme{box-shadow:inset 0 0 0 1px var(--line);padding:8px 11px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(32px,6vw,80px);align-items:center;padding:clamp(48px,9vw,104px) 0 clamp(40px,6vw,72px)}
+.kicker{color:var(--accent);font-weight:500;font-size:15px;margin-bottom:18px}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(38px,5.6vw,66px);line-height:1.05;letter-spacing:-.02em;max-width:14ch;text-wrap:balance}
+.lede{margin-top:24px;max-width:52ch;font-size:18px;line-height:1.65;color:var(--muted);transition:opacity .25s}
+.lede strong{color:var(--ink);font-weight:500}
+.lede.swap{opacity:0}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.btn{font:500 15px var(--sans);text-decoration:none;padding:13px 22px;border-radius:8px;transition:background .2s,border-color .2s}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.ghost{box-shadow:inset 0 0 0 1px var(--line)}
+.btn.ghost:hover{background:var(--surface)}
+
+/* case review panel */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 2px rgba(15,28,46,.04),0 12px 32px -16px rgba(15,28,46,.18)}
+.panel-head{display:flex;justify-content:space-between;gap:12px;padding:16px 22px;border-bottom:1px solid var(--line);font-size:14px;color:var(--muted)}
+.panel-head b{color:var(--ink);font-weight:600}
+.row{display:grid;grid-template-columns:1fr auto;gap:4px 16px;padding:16px 22px;border-bottom:1px solid var(--line)}
+.row:last-of-type{border-bottom:0}
+.row h3{font-size:15px;font-weight:600}
+.row p{grid-column:1;font-size:14px;line-height:1.5;color:var(--muted)}
+.status{grid-row:1;grid-column:2;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;white-space:nowrap}
+.status::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.s-high{color:var(--high)} .s-mid{color:var(--mid)} .s-ok{color:var(--ok)} .s-acc{color:var(--accent)}
+.panel-foot{padding:14px 22px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+
+/* process */
+.process{border-top:1px solid var(--line);padding:clamp(36px,6vw,64px) 0}
+.process h2{font-family:var(--serif);font-weight:400;font-size:clamp(26px,3vw,34px);letter-spacing:-.01em;margin-bottom:32px}
+ol{list-style:none;display:grid;grid-template-columns:repeat(5,1fr);gap:0;counter-reset:s}
+li{counter-increment:s;padding:0 20px 0 0;position:relative}
+li::before{content:counter(s);display:grid;place-items:center;width:28px;height:28px;border-radius:50%;font-size:13px;font-weight:600;color:var(--accent);box-shadow:inset 0 0 0 1px var(--line);background:var(--surface);position:relative;z-index:1}
+li::after{content:"";position:absolute;top:14px;left:28px;right:0;height:1px;background:var(--line)}
+li:last-child::after{display:none}
+li:last-child::before{background:var(--accent);color:var(--accent-ink);box-shadow:none}
+li b{display:block;margin-top:14px;font-weight:600;font-size:15px}
+li span{display:block;margin-top:2px;font-size:14px;color:var(--muted)}
+.note{padding-bottom:48px;font-size:13px;color:var(--muted)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr}
+  ol{grid-template-columns:1fr;gap:22px}
+  li{display:grid;grid-template-columns:28px 1fr;column-gap:14px;padding:0}
+  li::after{display:none}
+  li b{margin-top:0}
+  li span{grid-column:2}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.panel{animation:rise .7s .15s both cubic-bezier(.2,.8,.2,1)}
+
+/* ── soft glass + mesh refinement ── */
+:root{
+  --g1:rgba(255,255,255,.55);--g2:rgba(255,255,255,.14);--gl:rgba(255,255,255,.7);--hl:rgba(255,255,255,.8);
+  --p1:rgba(255,255,255,.34);--p2:rgba(255,255,255,.08);--sl:rgba(15,28,46,.07);
+  --m1:#cfe3f6;--m2:#dbeafa;--m3:#d3e4f5;--m4:#e9f1fa;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --g1:rgba(255,255,255,.13);--g2:rgba(255,255,255,.04);--gl:rgba(255,255,255,.16);--hl:rgba(255,255,255,.2);
+    --p1:rgba(255,255,255,.08);--p2:rgba(255,255,255,.02);--sl:rgba(255,255,255,.09);
+    --m1:#0f3a63;--m2:#0c2f55;--m3:#0e3b5c;--m4:#102c48;
+  }
+}
+:root[data-theme="dark"]{
+  --g1:rgba(255,255,255,.13);--g2:rgba(255,255,255,.04);--gl:rgba(255,255,255,.16);--hl:rgba(255,255,255,.2);
+  --p1:rgba(255,255,255,.08);--p2:rgba(255,255,255,.02);--sl:rgba(255,255,255,.09);
+  --m1:#0f3a63;--m2:#0c2f55;--m3:#0e3b5c;--m4:#102c48;
+}
+body{position:relative}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(46% 44% at 10% 6%,var(--m1) 0,transparent 72%),
+    radial-gradient(42% 40% at 92% 10%,var(--m2) 0,transparent 72%),
+    radial-gradient(46% 44% at 84% 92%,var(--m3) 0,transparent 72%),
+    radial-gradient(40% 40% at 6% 86%,var(--m4) 0,transparent 72%),
+    var(--bg);
+}
+
+/* floating liquid-glass navbar, 10% clear on each side */
+header{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);z-index:20;margin:16px 10% 0}
+.nav{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 16px;
+  padding:9px 10px 9px 24px;border-radius:999px;
+  background:linear-gradient(135deg,var(--g1),var(--g2));
+  border:1px solid var(--gl);
+  -webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);
+  box-shadow:inset 0 1px 0 var(--hl),0 14px 40px -16px rgba(15,28,46,.22);
+}
+.tabs button{border-radius:999px}
+.tabs button[aria-selected="true"]{background:var(--g1);box-shadow:0 2px 10px -3px rgba(15,28,46,.16)}
+.theme{box-shadow:none;background:var(--g2);border-radius:999px}
+@media (max-width:700px){.nav{border-radius:28px;padding:12px 16px;justify-content:center}}
+
+/* softer, rounder, calmer */
+.hero{padding-top:clamp(40px,8vw,88px)}
+.btn{border-radius:999px;padding:14px 28px}
+.btn.primary{box-shadow:0 10px 28px -12px var(--accent)}
+.btn.ghost{box-shadow:none;background:var(--g2);border:1px solid var(--gl)}
+.btn.ghost:hover{background:var(--g1)}
+.panel{
+  background:linear-gradient(160deg,var(--p1),var(--p2));
+  border:1px solid var(--gl);border-radius:32px;overflow:hidden;
+  -webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);
+  box-shadow:inset 0 1px 0 var(--hl),0 30px 70px -34px rgba(15,28,46,.28);
+}
+.panel-head,.panel-foot{padding-left:28px;padding-right:28px;border-color:var(--sl)}
+.row{padding:18px 28px;border-color:var(--sl)}
+.process{border-top-color:var(--sl)}
+li::before{background:var(--g1);box-shadow:none;border:1px solid var(--gl)}
+li:last-child::before{background:var(--accent);border-color:transparent}
+li::after{background:var(--sl)}
+
+/* medical structure */
+.ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.kicker{display:flex;align-items:center;gap:10px}
+.kicker i{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:var(--g1);border:1px solid var(--gl)}
+.kicker .ico{width:14px;height:14px}
+.ecgline{display:block;width:100%;height:36px;margin:0 0 20px;opacity:.45}
+.ecgline path{fill:none;stroke:var(--accent);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.trust{display:grid;grid-template-columns:repeat(3,1fr);border-radius:24px;background:linear-gradient(135deg,var(--p1),var(--p2));border:1px solid var(--gl);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.trust div{display:flex;align-items:center;gap:12px;padding:18px 24px;font-size:15px;font-weight:500}
+.trust div+div{border-left:1px solid var(--sl)}
+.trust .ico{color:var(--accent);flex:none}
+.sec{padding:clamp(40px,6vw,72px) 0 clamp(36px,5vw,56px)}
+.sec h2{font-family:var(--serif);font-weight:400;font-size:clamp(26px,3vw,34px);letter-spacing:-.01em;margin-bottom:28px}
+.fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.fcard{padding:24px;border-radius:24px;background:linear-gradient(160deg,var(--p1),var(--p2));border:1px solid var(--gl);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.badge{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;margin-bottom:18px;background:var(--g1);border:1px solid var(--gl);color:var(--accent)}
+.fcard h3{font-size:16px;font-weight:600}
+.fcard p{margin-top:6px;font-size:14px;line-height:1.55;color:var(--muted)}
+.spark{display:block;width:100%;height:34px;margin-top:14px}
+.spark polyline{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.note{padding-bottom:24px}
+.foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px 32px;padding-top:24px;padding-bottom:40px;border-top:1px solid var(--sl);font-size:13px;color:var(--muted)}
+@media (max-width:900px){.fgrid{grid-template-columns:repeat(2,1fr)}.trust{grid-template-columns:1fr}.trust div+div{border-left:0;border-top:1px solid var(--sl)}}
+@media (max-width:560px){.fgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a class="logo" href="#" aria-label="Tachyra Diagnostics">
+      <svg viewBox="0 0 44 32" fill="none" aria-hidden="true"><path d="M1 17H12L16 7L22 29L27 3L31 17H43" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Tachyra <span>Diagnostics</span>
+    </a>
+    <div class="tools">
+      <div class="tabs" id="tabs" role="tablist" aria-label="Choose your audience">
+        <button role="tab" aria-selected="true" data-a="phys">Physicians</button>
+        <button role="tab" aria-selected="false" data-a="pat">Patients</button>
+        <button role="tab" aria-selected="false" data-a="inv">Investors</button>
+      </div>
+      <button class="theme" id="theme" aria-label="Toggle light and dark theme">Theme</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <p class="kicker"><i><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/></svg></i>AI clinical decision support, built with physicians</p>
+      <h1>A second set of eyes for every physician</h1>
+      <p class="lede" id="lede">Before each visit, Tachyra reviews the patient’s full history, every medication, and their lab trends. The physician walks in with a ranked list of possible causes, a full medication-safety check, and the reasoning behind each flag. <strong>The physician reviews, edits, and approves everything.</strong></p>
+      <div class="cta">
+        <a class="btn primary" href="#" id="cta">Request physician access</a>
+        <a class="btn ghost" href="#process">See how it works</a>
+      </div>
+    </div>
+
+    <aside class="panel" aria-label="Example pre-visit review">
+      <div class="panel-head"><b>Pre-visit review</b><span>Fictional patient</span></div>
+      <div class="row"><h3>Stable angina</h3><span class="status s-acc">Most likely</span><p>Exertional chest tightness, prior stent, cardiac risk profile.</p></div>
+      <div class="row"><h3>Reduced clopidogrel response</h3><span class="status s-mid">Consider</span><p>Genetic marker on file suggests the antiplatelet may work less well.</p></div>
+      <div class="row"><h3>Warfarin + ibuprofen</h3><span class="status s-high">High risk</span><p>Combined bleeding risk. Alternatives surfaced for review.</p></div>
+      <div class="row"><h3>Duplicate therapy</h3><span class="status s-ok">Clear</span><p>No therapeutic duplications found.</p></div>
+      <div class="panel-foot">Awaiting physician review</div>
+    </aside>
+  </section>
+
+  <svg class="ecgline" viewBox="0 0 1200 36" preserveAspectRatio="none" aria-hidden="true"><path d="M0 18H430l10-5 10 5h90l8 9 14-24 14 30 8-15H1200"/></svg>
+
+  <div class="trust">
+    <div><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>Physician approves every decision</div>
+    <div><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Reasoning shown for every flag</div>
+    <div><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>Built with physicians</div>
+  </div>
+
+  <section class="sec">
+    <h2>What the physician sees before the visit</h2>
+    <div class="fgrid">
+      <div class="fcard"><span class="badge"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 3h6v3H9zM9 11h6M9 15h4"/></svg></span><h3>Full history</h3><p>Every visit and record, read before the appointment.</p></div>
+      <div class="fcard"><span class="badge"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8.5" width="18" height="7" rx="3.5" transform="rotate(-45 12 12)"/><path d="M9.5 9.5l5 5"/></svg></span><h3>Medication safety</h3><p>Every medication checked for interactions and duplicate therapy.</p></div>
+      <div class="fcard"><span class="badge"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l6-6 4 4 8-9"/></svg></span><h3>Lab trends</h3><p>Changes over time, surfaced as they matter.</p><svg class="spark" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,26 20,22 40,24 60,15 80,17 100,8 120,5"/></svg></div>
+      <div class="fcard"><span class="badge"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h11M4 18h7"/></svg></span><h3>Ranked causes</h3><p>Possible causes in order, with the reasoning behind each flag.</p></div>
+    </div>
+  </section>
+
+  <section class="process" id="process">
+    <h2>How it works</h2>
+    <ol>
+      <li><b>Full history</b><span>Every visit and record</span></li>
+      <li><b>Every medication</b><span>Safety checked</span></li>
+      <li><b>Lab trends</b><span>Changes over time</span></li>
+      <li><b>Ranked causes</b><span>Reasoning shown</span></li>
+      <li><b>Physician approves</b><span>Review, edit, decide</span></li>
+    </ol>
+  </section>
+  <p class="note">Findings shown are an illustration with a fictional patient.</p>
+</main>
+
+<footer class="wrap foot">
+  <span>© 2026 Tachyra Diagnostics</span>
+  <span>Tachyra supports clinical decision-making. The physician reviews, edits, and approves everything.</span>
+</footer>
+
+<script>
+(function(){
+  var copy={
+    phys:{lede:'Before each visit, Tachyra reviews the patient’s full history, every medication, and their lab trends. The physician walks in with a ranked list of possible causes, a full medication-safety check, and the reasoning behind each flag. <strong>The physician reviews, edits, and approves everything.</strong>',cta:'Request physician access'},
+    pat:{lede:'Your physician sees the whole picture before you sit down: your history, every medication you take, and how your labs have changed. <strong>Your time together goes to you, and your physician makes every decision.</strong>',cta:'See how it keeps you safe'},
+    inv:{lede:'Clinical decision support designed around physician trust: transparent reasoning behind every flag, a full medication-safety check, and a physician who <strong>reviews, edits, and approves everything.</strong>',cta:'Read the investor brief'}
+  };
+  var btns=[].slice.call(document.querySelectorAll('#tabs button')),
+      lede=document.getElementById('lede'), cta=document.getElementById('cta');
+  btns.forEach(function(b){
+    b.addEventListener('click',function(){
+      btns.forEach(function(x){x.setAttribute('aria-selected',x===b?'true':'false')});
+      lede.classList.add('swap');
+      setTimeout(function(){
+        var d=copy[b.dataset.a]; lede.innerHTML=d.lede; cta.textContent=d.cta; lede.classList.remove('swap');
+      },220);
+    });
+  });
+  document.getElementById('theme').addEventListener('click',function(){
+    var r=document.documentElement,
+        dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    r.dataset.theme=dark?'light':'dark';
+  });
+})();
+</script>
+</body>
+</html>
